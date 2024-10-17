@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "home-lab"
+version = "0.1.0"
+description = "Home Lab"
+authors = ["MAHDTech <MAHDTech@saltlabs.tech>"]
+license = "Unlicense"
+readme = "README.md"
+package-mode = false
+
+[tool.poetry.dependencies]
+python = ">=3.11,<3.13"
+range = "^1.0.0"
+salt = "^3007.1"
+mako = "^1.3.5"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
