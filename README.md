@@ -21,6 +21,8 @@ This year I'm learning Nutanix at work so the Lab is based on that in addition t
 
 Instead of `homelab`, the project moved to [salt-labs/nutanix-lab](https://github.com/salt-labs/nutanix-lab) in collaboration with the `Bingamon` Lab.
 
+_Deprecated_.
+
 ### 2023
 
 This year I'm using vSphere at work and dog-fooding in the Lab.
