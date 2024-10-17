@@ -1,0 +1,158 @@
+#!mako|yaml
+
+<%
+  import getpass
+  user = getpass.getuser()
+%>
+
+---
+
+# files.saltlabs.cloud - 10.10.100.10
+# prism-central.saltlabs.cloud - 10.10.100.20
+
+# ntnx-ahv-1.saltlabs.cloud
+# Nutanix AHV
+# 10.10.100.11
+ntnx-ahv-1:
+  host: ntnx-ahv-1.saltlabs.cloud
+  user: root
+
+# ntnx-ahv-2.saltlabs.cloud
+# Nutanix AHV
+# 10.10.100.12
+ntnx-ahv-2:
+  host: ntnx-ahv-2.saltlabs.cloud
+  user: root
+
+# ntnx-ahv-3.saltlabs.cloud
+# Nutanix AHV
+# 10.10.100.13
+ntnx-ahv-3:
+  host: ntnx-ahv-3.saltlabs.cloud
+  user: root
+
+# ntnx-ahv-4.saltlabs.cloud
+# Nutanix AHV
+# 10.10.100.14
+ntnx-ahv-4:
+  host: ntnx-ahv-4.saltlabs.cloud
+  user: root
+
+# ntnx-cvm-1.saltlabs.cloud
+# Nutanix CVM (Rocky Linux)
+# 10.10.100.21
+ntnx-cvm-1:
+  host: ntnx-cvm-1.saltlabs.cloud
+  user: nutanix
+
+# ntnx-cvm-2.saltlabs.cloud
+# Nutanix CVM (Rocky Linux)
+# 10.10.100.22
+ntnx-cvm-2:
+  host: ntnx-cvm-2.saltlabs.cloud
+  user: nutanix
+
+# ntnx-cvm-3.saltlabs.cloud
+# Nutanix CVM (Rocky Linux)
+# 10.10.100.23
+ntnx-cvm-3:
+  host: ntnx-cvm-3.saltlabs.cloud
+  user: nutanix
+
+# ntnx-cvm-4.saltlabs.cloud
+# Nutanix CVM (Rocky Linux)
+# 10.10.100.24
+ntnx-cvm-4:
+  host: ntnx-cvm-4.saltlabs.cloud
+  user: nutanix
+
+# jumpbox.saltlabs.cloud
+# Debian Bookworm
+# 10.10.100.100
+jumpbox:
+  host: jumpbox.saltlabs.cloud
+  user: ubuntu
+
+# OrangePi 5 Pro #1
+# Armbian Bookworm
+# 10.10.100.101
+opi-001:
+  host: opi-001.saltlabs.cloud
+  user: ubuntu
+
+# OrangePi 5 Pro #2
+# Armbian Bookworm
+# 10.10.100.102
+opi-002:
+  host: opi-002.saltlabs.cloud
+  user: ubuntu
+
+# OrangePi 5 Pro #3
+# Armbian Bookworm
+# 10.10.100.103
+opi-003:
+  host: opi-003.saltlabs.cloud
+  user: ubuntu
+
+# OrangePi 5 Pro #4
+# Armbian Bookworm
+# 10.10.100.104
+opi-004:
+  host: opi-004.saltlabs.cloud
+  user: ubuntu
+
+# OrangePi 5 Pro #5
+# Armbian Bookworm
+# 10.10.100.105
+opi-005:
+  host: opi-005.saltlabs.cloud
+  user: ubuntu
+
+# OrangePi 5 Pro #6
+# Armbian Bookworm
+# 10.10.100.106
+opi-006:
+  host: opi-006.saltlabs.cloud
+  user: ubuntu
+
+# OrangePi 5 Pro #7
+# Armbian Bookworm
+# 10.10.100.107
+opi-007:
+  host: opi-007.saltlabs.cloud
+  user: ubuntu
+
+# OrangePi 5 Pro #8
+# Armbian Bookworm
+# 10.10.100.108
+opi-008:
+  host: opi-008.saltlabs.cloud
+  user: ubuntu
+
+# OrangePi 5 Pro #9
+# Armbian Bookworm
+# 10.10.100.109
+opi-009:
+  host: opi-009.saltlabs.cloud
+  user: ubuntu
+
+# OrangePi 5 Pro #10
+# Armbian Bookworm
+# 10.10.100.110
+opi-010:
+  host: opi-010.saltlabs.cloud
+  user: ubuntu
+
+# OrangePi 5 Pro #11
+# Armbian Bookworm
+# 10.10.100.111
+opi-011:
+  host: opi-011.saltlabs.cloud
+  user: ubuntu
+
+# OrangePi 5 Pro #12
+# Armbian Bookworm
+# 10.10.100.112
+opi-012:
+  host: opi-012.saltlabs.cloud
+  user: ubuntu
