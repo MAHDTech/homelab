@@ -5,35 +5,19 @@
   ...
 }: let
   packages = with pkgs; [
-    bashInteractive
     hello
   ];
 
   devPackages = with pkgs; [
-    age
-    direnv
     figlet
-    git
-    glibc
-    google-cloud-sdk
-    jq
-    kube-linter
-    kubectl
-    kubernetes-helm
-    openssl
-    openssh
+    pulumictl
     pulumi-bin
-    ssh-to-age
-    ssh-to-pgp
-    sshuttle
-    vault
-    yq-go
   ];
 in {
-  name = "home-lab";
+  name = "homelab";
 
   env = {
-    PROJECT = "home-lab";
+    PROJECT = "homelab";
   };
 
   cachix = {
@@ -75,28 +59,6 @@ in {
     go = {
       enable = true;
     };
-
-    rust = {
-      enable = true;
-    };
-
-    python = {
-      enable = true;
-      venv = {
-        enable = true;
-      };
-      poetry = {
-        enable = true;
-        activate = {
-          enable = true;
-        };
-        install = {
-          enable = true;
-          allExtras = true;
-          verbosity = "little";
-        };
-      };
-    };
   };
 
   difftastic = {
@@ -134,7 +96,6 @@ in {
         enable = true;
         excludes = [
           "vendor/"
-          "*.sls"
         ];
       };
 

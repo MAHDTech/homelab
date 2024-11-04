@@ -15,6 +15,14 @@ My home lab reimagined semi-annually.
 
 ## Diagrams
 
+### 2025
+
+Working with VMware in the day job, so the Lab follows suit.
+
+This repo will now move to a single purpose of cloning VM templates using Pulumi.
+
+Configuration management is done using Nix Flakes mangaged in [nix-config](https://github.com/MAHDTech/nix-config).
+
 ### 2024
 
 This year I'm learning Nutanix at work so the Lab is based on that in addition to making use of some OrangePi 5's I have laying around.

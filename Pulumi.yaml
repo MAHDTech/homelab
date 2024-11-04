@@ -1,0 +1,11 @@
+name: homelab
+runtime: go
+description: Home Lab
+config:
+  pulumi:tags:
+    value:
+      pulumi:template: ""
+  debug:
+    description: Enable debug mode
+    type: boolean
+    default: false

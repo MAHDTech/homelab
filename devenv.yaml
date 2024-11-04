@@ -12,6 +12,7 @@ imports: []
 clean:
   enabled: true
   keep:
-    - EDITOR
     - CACHIX_TOKEN
+    - EDITOR
     - GITHUB_TOKEN
+    - PULUMI_ACCESS_TOKEN

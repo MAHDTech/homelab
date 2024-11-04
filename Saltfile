@@ -1,7 +1,0 @@
----
-salt-ssh:
-  config_dir: salt/config
-  ssh_log_file: salt/logs/salt-ssh.log
-  ssh_max_procs: 30
-  ssh_wipe: True
-  ignore_host_keys: True

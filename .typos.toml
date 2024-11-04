@@ -1,0 +1,41 @@
+[default]
+
+locale = "en-au"
+
+extend-ignore-re = [
+    "^[ \t]*-----BEGIN PGP PUBLIC KEY BLOCK-----.*^[ \t]*-----END PGP PUBLIC KEY BLOCK-----",
+    "^[ \t]*initialHashedPassword[ \t]*=[ \t]*.*$"
+]
+
+[default.extend-words]
+
+ags = "ags"
+authorised = "authorised"
+authorized = "authorized"
+center = "center"
+cros = "cros"
+customizations = "customizations"
+guage = "guage"
+hashi = "hashi"
+hashicorp = "hashicorp"
+hda = "hda"
+maximize = "maximize"
+normalization = "normalization"
+optimizations = "optimizations"
+optimized = "optimized"
+randomize = "randomize"
+randomized = "randomized"
+recognize = "recognize"
+
+[files]
+
+ignore-vcs = true
+
+extend-exclude = [
+  "*.drawio",
+  ".devenv",
+  ".direnv",
+  ".git",
+  "secrets",
+  "vendor"
+]

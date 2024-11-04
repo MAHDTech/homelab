@@ -1,0 +1,59 @@
+config:
+  
+  ######################### 
+  # Global
+  #########################
+  debug: true
+  
+  #########################
+  # AWS
+  #########################
+  aws:
+    enabled: false
+    infrastructure:
+      ec2:
+        instances:
+          - name: EC2-1
+            description: EC2 Instance 1
+            size: t3.small
+  
+  #########################
+  # Azure
+  #########################
+  azure:
+    enabled: false
+  
+  #########################
+  # GCP
+  #########################
+  gcp:
+    enabled: false
+  
+  #########################
+  # Nutanix
+  #########################
+  nutanix:
+    enabled: false
+ 
+  #########################
+  # vSphere
+  #########################
+  vsphere:
+    enabled: true
+    vcenter:
+      cluster: Googong
+      datacenter: Salt Labs
+      datastore: vSAN
+    infrastructure:
+      vms:
+        - name: NIXOS-1
+          description: NixOS 1
+          size: small
+          resourcePool: Home Lab
+          Folder: Fleet
+        - name: NIXOS-2
+          description: NixOS 2
+          size: medium
+          resourcePool: Home Lab
+          Folder: Fleet
+  
