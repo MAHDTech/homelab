@@ -1,10 +1,11 @@
 config:
-  
-  ######################### 
+  #########################
   # Global
   #########################
-  debug: true
-  
+  global:
+    enabled: true
+    debug: true
+
   #########################
   # AWS
   #########################
@@ -16,32 +17,32 @@ config:
           - name: EC2-1
             description: EC2 Instance 1
             size: t3.small
-  
+
   #########################
   # Azure
   #########################
   azure:
     enabled: false
-  
+
   #########################
   # GCP
   #########################
   gcp:
     enabled: false
-  
+
   #########################
   # Nutanix
   #########################
   nutanix:
     enabled: false
- 
+
   #########################
   # vSphere
   #########################
   vsphere:
     enabled: true
     vcenter:
-      cluster: Googong
+      cluster: "Googong"
       datacenter: Salt Labs
       datastore: vSAN
     infrastructure:
@@ -56,4 +57,3 @@ config:
           size: medium
           resourcePool: Home Lab
           Folder: Fleet
-  

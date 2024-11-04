@@ -7,7 +7,8 @@ My home lab reimagined semi-annually.
 - [Home Lab](#home-lab)
   - [Table of Contents](#table-of-contents)
   - [Diagrams](#diagrams)
-    - [2024](#2024)
+    - [2024 (Part 2)](#2024-part-2)
+    - [2024 (Part 1)](#2024-part-1)
     - [2023](#2023)
     - [2022](#2022)
     - [2021](#2021)
@@ -15,15 +16,15 @@ My home lab reimagined semi-annually.
 
 ## Diagrams
 
-### 2025
+### 2024 (Part 2)
 
-Working with VMware in the day job, so the Lab follows suit.
+Q4 brought with it a change in the day job, now working with a mix of different cloud providers so the Lab has followed suit.
 
-This repo will now move to a single purpose of cloning VM templates using Pulumi.
+This repo will now move to a single purpose of managing infra using Pulumi.
 
-Configuration management is done using Nix Flakes mangaged in [nix-config](https://github.com/MAHDTech/nix-config).
+All configuration management for the Lab is done using Nix Flakes mangaged in [nix-config](https://github.com/MAHDTech/nix-config).
 
-### 2024
+### 2024 (Part 1)
 
 This year I'm learning Nutanix at work so the Lab is based on that in addition to making use of some OrangePi 5's I have laying around.
 

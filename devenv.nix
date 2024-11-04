@@ -10,8 +10,13 @@
 
   devPackages = with pkgs; [
     figlet
-    pulumictl
+    go
+    go-tools
+    golangci-lint
+    hello
+    nix
     pulumi-bin
+    pulumictl
   ];
 in {
   name = "homelab";
@@ -44,7 +49,7 @@ in {
   enterShell = ''
     figlet -f starwars -w 120 $PROJECT
 
-    echo Hello ''${USER:-user}, welcome to the $PROJECT project
+    hello --greeting="Hello ''${USER:-user}, welcome to the $PROJECT project!"
   '';
 
   languages = {
@@ -65,90 +70,32 @@ in {
     enable = true;
   };
 
-  pre-commit = {
-    default_stages = [
-      "pre-commit"
+  git-hooks = {
+    excludes = [
+      ".cache"
+      ".devenv"
+      ".direnv"
+      "vendor"
     ];
-
-    excludes = [];
-
     hooks = {
-      actionlint = {
-        enable = true;
-      };
-
-      alejandra = {
-        enable = true;
-        fail_fast = true;
-        excludes = [
-          "vendor/"
-        ];
-      };
-
-      check-json = {
-        enable = true;
-        excludes = [
-          "vendor/"
-        ];
-      };
-
-      check-shebang-scripts-are-executable = {
-        enable = true;
-        excludes = [
-          "vendor/"
-        ];
-      };
-
-      check-symlinks = {
-        enable = true;
-        excludes = [
-          "vendor/"
-        ];
-      };
-
-      check-yaml = {
-        enable = true;
-        excludes = [
-          "vendor/"
-        ];
-      };
-
-      convco = {
-        enable = true;
-      };
-
-      cspell = {
-        enable = false;
-        excludes = [
-          "vendor/"
-        ];
-      };
-
-      deadnix = {
-        enable = true;
-        excludes = [
-          "vendor/"
-        ];
-      };
-
-      dialyzer = {
-        enable = true;
-        excludes = [
-          "vendor/"
-        ];
-      };
-
-      editorconfig-checker = {
-        enable = true;
-      };
-
-      hadolint = {
-        enable = true;
-        excludes = [
-          "vendor/"
-        ];
-      };
-
+      actionlint.enable = true;
+      beautysh.enable = true;
+      check-json.enable = true;
+      check-merge-conflicts.enable = true;
+      check-shebang-scripts-are-executable.enable = true;
+      check-symlinks.enable = true;
+      check-yaml.enable = true;
+      commitizen.enable = true;
+      convco.enable = true;
+      deadnix.enable = true;
+      dialyzer.enable = true;
+      editorconfig-checker.enable = true;
+      gofmt.enable = true;
+      golangci-lint.enable = true;
+      golines.enable = true;
+      gotest.enable = true;
+      govet.enable = true;
+      gptcommit.enable = true;
       markdownlint = {
         enable = true;
         settings = {
@@ -158,81 +105,21 @@ in {
             };
           };
         };
-        excludes = [
-          "vendor/"
-        ];
       };
-
-      nil = {
-        enable = false;
-        excludes = [
-          "vendor/"
-        ];
-      };
-
-      pre-commit-hook-ensure-sops = {
-        enable = true;
-        excludes = [
-          "vendor/"
-        ];
-      };
-
-      prettier = {
-        enable = true;
-        excludes = [
-          "vendor/"
-        ];
-      };
-
-      pretty-format-json = {
-        enable = true;
-        excludes = [
-          "vendor/"
-        ];
-      };
-
-      ripsecrets = {
-        enable = true;
-        excludes = [
-          "vendor/"
-        ];
-      };
-
-      shellcheck = {
-        enable = true;
-        excludes = [
-          "vendor/"
-        ];
-      };
-
-      shfmt = {
-        enable = true;
-        excludes = [
-          "vendor/"
-        ];
-      };
-
-      staticcheck = {
-        enable = true;
-        excludes = [
-          "vendor/"
-        ];
-      };
-
-      trim-trailing-whitespace = {
-        enable = true;
-        excludes = [
-          "vendor/"
-        ];
-      };
-
-      typos = {
-        enable = true;
-        excludes = [
-          "vendor/"
-        ];
-      };
-
+      mixed-line-endings.enable = true;
+      nixfmt-rfc-style.enable = true;
+      pre-commit-hook-ensure-sops.enable = true;
+      prettier.enable = true;
+      pretty-format-json.enable = true;
+      revive.enable = true;
+      ripsecrets.enable = true;
+      shellcheck.enable = true;
+      shfmt.enable = true;
+      staticcheck.enable = true;
+      statix.enable = true;
+      trufflehog.enable = true;
+      trim-trailing-whitespace.enable = true;
+      typos.enable = true;
       yamllint = {
         enable = true;
         settings = {
@@ -243,9 +130,6 @@ in {
               indentation: enable
           '';
         };
-        excludes = [
-          "vendor/"
-        ];
       };
     };
   };

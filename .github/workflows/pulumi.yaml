@@ -1,0 +1,151 @@
+##################################################
+# Name: pulumi.yaml
+# Description: Runs pulumi on environment branches
+##################################################
+
+name: Pulumi
+
+on:
+  push:
+    branches:
+    - trunk
+
+  pull_request:
+    branches:
+      - trunk
+    types:
+      - opened
+      - reopened
+      - edited
+      - assigned
+      - synchronize
+      - review_requested
+
+permissions:
+  contents: read
+  packages: read
+  pull-requests: write
+  statuses: write
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  PROJECT: ${{ github.repository }}
+
+  BRANCH_NAME_CURRENT: ${{ github.head_ref || github.ref_name }}
+  BRANCH_NAME_DEFAULT: ${{ github.event.repository.default_branch }}
+
+  # Pulumi Secrets
+  PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
+  PULUMI_COMMENT_ON_PR: true
+  PULUMI_COMMENT_ON_SUMMARY: true
+  PULUMI_ROOT: ./
+
+jobs:
+
+  ##################################################
+  # Generate a matrix of possible Pulumi stacks.
+  ##################################################
+
+  matrix:
+    name: Matrix
+
+    runs-on: ${{ matrix.os }}
+
+    timeout-minutes: 30
+    continue-on-error: false
+
+    strategy:
+      fail-fast: true
+      matrix:
+        os:
+          - ubuntu-latest
+
+    steps:
+      - id: checkout_repository
+        name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - id: generate_matrix
+        name: Generating a matrix of Pulumi stacks
+        # TODO: pulumi stack ls --json | jq .[].name
+        run: |
+          echo "Generating matrix of Pulumi stacks..."
+          # yamllint disable-line rule:line-length
+          STACKS=$(find . -mindepth 1 -maxdepth 1 -type f -name "Pulumi.*.yaml" -printf "%f\n" | cut -d. -f2 | jq -R -s -c 'split("\n")[:-1]')
+          echo "${STACKS}" | jq .
+          echo "STACK_MATRIX=${STACKS}" >> "$GITHUB_OUTPUT"
+
+    outputs:
+      stack_matrix: ${{ steps.generate_matrix.outputs.STACK_MATRIX }}
+
+  ##################################################
+  # Pulumi Stacks
+  ##################################################
+
+  pulumi:
+    name: Pulumi Stack ${{ matrix.stack }}
+
+    runs-on: ${{ matrix.os }}
+
+    timeout-minutes: 30
+
+    needs: matrix
+
+    strategy:
+      fail-fast: true
+      matrix:
+        os:
+          - ubuntu-latest
+        stack: ${{ fromJson(needs.matrix.outputs.stack_matrix) }}
+
+    steps:
+
+      - id: go_setup
+        name: Set up Go
+        uses: actions/setup-go@v5
+
+      - id: go_check
+        name: Go Check
+        run: |
+          go version
+          go env
+
+      - id: checkout_repository
+        name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          lfs: false
+          submodules: recursive
+          fetch-depth: 1
+
+      - id: go_mod_download
+        name: Get dependencies
+        run: go mod download
+
+      - id: pulumi_preview
+        name: Pulumi preview
+        if: github.event_name == 'pull_request' || github.event_name == 'push'
+        uses: pulumi/actions@v6
+        with:
+          command: preview
+          comment-on-pr: ${{ env.PULUMI_COMMENT_ON_PR }}
+          comment-on-summary: ${{ env.PULUMI_COMMENT_ON_SUMMARY }}
+          diff: true
+          refresh: true
+          stack-name: ${{ matrix.stack }}
+          work-dir: ${{ env.PULUMI_ROOT }}
+
+      - id: pulumi_update
+        name: Pulumi update
+        if: github.event_name == 'push' && steps.pulumi_preview.outcome == 'success'
+        uses: pulumi/actions@v6
+        with:
+          command: update --yes
+          refresh: true
+          stack-name: ${{ matrix.stack }}
+          work-dir: ${{ env.PULUMI_ROOT }}
