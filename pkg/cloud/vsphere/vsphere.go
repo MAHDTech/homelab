@@ -14,9 +14,6 @@ func CreateResources(ctx *pulumi.Context, config *vsphereconfig.Config) error {
 
 	ctx.Log.Info("TASK: Creating VSphere resources...", nil)
 
-	message = "TODO: CREATE VSPHERE RESOURCES HERE..."
-	ctx.Log.Info(message, nil)
-
 	message = fmt.Sprintf("VSphere configuration: %+v", config)
 	ctx.Log.Info(message, nil)
 

@@ -3,10 +3,17 @@
     "devenv": {
       "locked": {
         "dir": "src/modules",
+<<<<<<< Updated upstream
         "lastModified": 1731619804,
         "owner": "cachix",
         "repo": "devenv",
         "rev": "87edaaf1dddf17fe16eabab3c8edaf7cca2c3bc2",
+=======
+        "lastModified": 1731501663,
+        "owner": "cachix",
+        "repo": "devenv",
+        "rev": "b48b0d8018e0dc8c14d9dca47cd6e55add94a603",
+>>>>>>> Stashed changes
         "type": "github"
       },
       "original": {
@@ -68,10 +75,17 @@
     },
     "nixpkgs-stable": {
       "locked": {
+<<<<<<< Updated upstream
         "lastModified": 1731386116,
         "owner": "NixOS",
         "repo": "nixpkgs",
         "rev": "689fed12a013f56d4c4d3f612489634267d86529",
+=======
+        "lastModified": 1731239293,
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "9256f7c71a195ebe7a218043d9f93390d49e6884",
+>>>>>>> Stashed changes
         "type": "github"
       },
       "original": {
