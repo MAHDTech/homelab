@@ -8,10 +8,6 @@ import (
 
 func VerifyConfig(ctx *pulumi.Context, configGlobal ConfigRaw) (Config, error) {
 
-	// TODO: Remove debug message.
-	message := fmt.Sprintf("DEBUG: configGlobal START: %+v", configGlobal)
-	ctx.Log.Info(message, nil)
-
 	// Validate that 'Enabled' is a boolean.
 	_, ok := configGlobal.Enabled.(bool)
 	if !ok {

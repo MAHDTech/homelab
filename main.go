@@ -2,6 +2,7 @@ package main
 
 import (
 	godotenv "github.com/joho/godotenv"
+
 	pulumi "github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 	pulumiConfig "github.com/pulumi/pulumi/sdk/v3/go/pulumi/config"
 
