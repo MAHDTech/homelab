@@ -42,7 +42,7 @@ config:
   vsphere:
     enabled: true
     vcenter:
-      cluster: Googong
+      cluster: "Googong"
       datacenter: Salt Labs
       datastore: vSAN
     infrastructure:

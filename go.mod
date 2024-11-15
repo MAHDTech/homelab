@@ -4,7 +4,10 @@ go 1.21
 
 toolchain go1.21.1
 
-require github.com/pulumi/pulumi/sdk/v3 v3.137.0
+require (
+	github.com/joho/godotenv v1.5.1
+	github.com/pulumi/pulumi/sdk/v3 v3.137.0
+)
 
 require (
 	dario.cat/mergo v1.0.0 // indirect
