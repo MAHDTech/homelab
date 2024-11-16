@@ -1,21 +1,11 @@
 ---
-name: Devenv
+name: Devenv Update
 
-# prettier-ignore
-on:  # yamllint disable-line rule:truthy
-  push:
-    branches:
-      - trunk
+on:
+  schedule:
+    - cron: "0 0 * * 0"
 
-  pull_request:
-    branches:
-      - "trunk"
-    paths:
-      - .github/workflows/devenv.yaml
-      - devenv.nix
-      - devenv.yaml
-      - devenv.lock
-      - devenv/**
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -37,11 +27,11 @@ defaults:
 
 jobs:
   ##################################################
-  # Test the Development environment shell
+  # Update
   ##################################################
 
-  test:
-    name: Test
+  update:
+    name: Update
 
     runs-on: ${{ matrix.os }}
 
@@ -92,7 +82,24 @@ jobs:
         run: |
           devenv gc
 
-      - id: devenv_test
-        name: Devenv test
+      - id: devenv_update
+        name: Devenv update
         run: |
-          devenv test
+          devenv update
+
+      - id: create_pull_request
+        name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "Update devenv.lock"
+          title: "Update devenv.lock"
+          body: "This PR updates the devenv input dependencies"
+          branch: "update-devenv-lock"
+          base: ${{ env.BRANCH_NAME_DEFAULT }}
+          labels: "dependencies"
+          assignees: "MAHDTech"
+          reviewers: "MAHDTech"
+          draft: false
+          signoff: true
+          delete-branch: true

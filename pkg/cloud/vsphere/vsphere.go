@@ -1,21 +1,22 @@
+// Package vsphere contains the functions for creating VMware resources.
 package vsphere
 
 import (
-	"fmt"
-
 	pulumi "github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 
-	vsphereconfig "homelab/pkg/cloud/vsphere/config"
+	vsphereschema "homelab/pkg/cloud/vsphere/schema"
+
+	utils "homelab/pkg/utils"
 )
 
-func CreateResources(ctx *pulumi.Context, config *vsphereconfig.Config) error {
+// CreateResources creates the VMware resources.
+func CreateResources(ctx *pulumi.Context, config *vsphereschema.Config) error {
 
-	var message string
+	utils.LogInfo(ctx, "✨ Creating vSphere resources...")
 
-	ctx.Log.Info("TASK: Creating VSphere resources...", nil)
+	utils.LogInfo(ctx, "vSphere configuration: %+v", config)
 
-	message = fmt.Sprintf("VSphere configuration: %+v", config)
-	ctx.Log.Info(message, nil)
+	utils.LogInfo(ctx, "🚀 Successfully created vSphere resources!")
 
 	return nil
 }

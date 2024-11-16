@@ -1,41 +1,32 @@
-package vsphereconfig
+// Package vsphereschema contains the structs for the VMware configuration.
+package vsphereschema
 
 import "strings"
 
-// ConfigRaw is used for the initial YAML parsing and validation.
-type ConfigRaw struct {
-	Enabled        interface{} `yaml:"enabled"`
-	Vcenter        interface{} `yaml:"vcenter"`
-	Infrastructure interface{} `yaml:"infrastructure"`
+// VirtualMachines holds the configuration for vSphere virtual machines.
+type VirtualMachines struct {
+	Enabled bool `yaml:"enabled"`
+	VMs     VMs  `yaml:"vms"`
 }
 
-// Config is the final struct for validated configuration.
-type Config struct {
-	Enabled        bool           `yaml:"enabled"`
-	Vcenter        Vcenter        `yaml:"vcenter"`
-	Infrastructure Infrastructure `yaml:"infrastructure"`
+// VMs is a list of vSphere VMs.
+type VMs struct {
+	VM []VM `yaml:"vms"`
 }
 
-// Vcenter holds connection information for VMware vCenter.
-type Vcenter struct {
-	Cluster    string `yaml:"cluster"`
-	Datacenter string `yaml:"datacenter"`
-	Datastore  string `yaml:"datastore"`
-}
-
-// Infrastructure holds the configuration for the vSphere infrastructure.
-type Infrastructure struct {
-	VMs []VM `yaml:"vms"`
-}
-
-// VM holds the configuration for a vSphere VM.
+// VM is a single vSphere VM.
 type VM struct {
 	Name         string `yaml:"name"`
 	Description  string `yaml:"description"`
-	Size         string `yaml:"size"`
+	Size         VMSKU  `yaml:"size"`
 	ResourcePool string `yaml:"resourcePool"`
 	Folder       string `yaml:"folder"`
+	Template     string `yaml:"template"`
 }
+
+// VMSKU is a valid vSphere VM size.
+// Valid values are: tiny, small, medium, large, xlarge
+type VMSKU string
 
 // VMSKUSpec defines the CPU and Memory configuration
 type VMSKUSpec struct {

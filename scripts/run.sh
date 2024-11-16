@@ -15,11 +15,11 @@ function header() {
 }
 
 function message() {
-	echo "$*"
+	echo "✅ $*"
 }
 
 function error() {
-	echo "ERROR: $*"
+	echo "💥 ERROR: $*"
 }
 
 function dotenv() {
@@ -37,6 +37,7 @@ function dotenv() {
 }
 
 function dependencies() {
+	header "✨ TASK: Checking dependencies..."
 
 	# Make sure pulumi is installed.
 	message "Checking for Pulumi installation..."
@@ -56,17 +57,10 @@ function dependencies() {
 		return 1
 	}
 
-	# Tidy the Go modules.
-	message "Tidying Go modules..."
+	# Download and Tidy the Go modules.
+	message "Downloading and Tidying Go modules..."
 	go mod tidy || {
 		error "Failed to tidy Go modules!"
-		return 1
-	}
-
-	# Download the Go modules.
-	message "Downloading Go modules..."
-	go mod download || {
-		error "Failed to download Go modules!"
 		return 1
 	}
 
@@ -81,12 +75,11 @@ function dependencies() {
 }
 
 function dry_run() {
-	header "OK: Starting preview..."
+	header "✨ TASK: Starting preview..."
 
 	message "Pulumi previewing..."
 	pulumi preview \
 		--refresh \
-		--diff \
 		--show-replacement-steps \
 		--logtostderr \
 		--verbose=3 || {
@@ -96,7 +89,7 @@ function dry_run() {
 }
 
 function run() {
-	header "OK: Starting update..."
+	header "✨ TASK: Starting update..."
 
 	message "Pulumi updating..."
 	pulumi update \
@@ -144,12 +137,12 @@ function main() {
 # MAIN
 ##################################################
 
-header "OK: Running script..."
+header "✨ TASK: Running script..."
 
 main || {
-	header "ERROR: Script failed! Review the output for more information."
+	header "💥 ERROR: Script failed! Review the output for more information."
 	exit 1
 }
 
-header "OK: Script completed successfully!"
+header "✨ TASK: Script completed successfully!"
 exit 0

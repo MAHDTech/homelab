@@ -26,6 +26,9 @@ optimized = "optimized"
 randomize = "randomize"
 randomized = "randomized"
 recognize = "recognize"
+specializing = "specializing"
+utilize = "utilize"
+prioritize = "prioritize"
 
 [files]
 

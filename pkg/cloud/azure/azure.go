@@ -1,21 +1,21 @@
+// Package azure contains the functions for creating Azure resources.
 package azure
 
 import (
-	"fmt"
-
 	pulumi "github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 
-	azureconfig "homelab/pkg/cloud/azure/config"
+	azureschema "homelab/pkg/cloud/azure/schema"
+	utils "homelab/pkg/utils"
 )
 
-func CreateResources(ctx *pulumi.Context, config *azureconfig.Config) error {
+// CreateResources creates the Azure resources.
+func CreateResources(ctx *pulumi.Context, config *azureschema.Config) error {
 
-	var message string
+	utils.LogInfo(ctx, "✨ Creating Azure resources...")
 
-	ctx.Log.Info("TASK: Creating Azure resources...", nil)
+	utils.LogInfo(ctx, "Azure configuration: %+v", config)
 
-	message = fmt.Sprintf("Azure configuration: %+v", config)
-	ctx.Log.Info(message, nil)
+	utils.LogInfo(ctx, "🚀 Successfully created Azure resources!")
 
 	return nil
 }

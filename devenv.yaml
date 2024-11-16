@@ -1,7 +1,8 @@
 # yaml-language-server: $schema=https://devenv.sh/devenv.schema.json
 inputs:
   nixpkgs:
-    url: github:cachix/devenv-nixpkgs/rolling
+    # url: github:cachix/devenv-nixpkgs/rolling # outdated
+    url: github:nixos/nixpkgs/nixpkgs-unstable
 
 allowUnfree: true
 
@@ -15,4 +16,5 @@ clean:
     - CACHIX_AUTH_TOKEN
     - EDITOR
     - GITHUB_TOKEN
+    - HOME
     - PULUMI_ACCESS_TOKEN

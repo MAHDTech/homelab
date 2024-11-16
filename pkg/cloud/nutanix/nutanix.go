@@ -1,21 +1,22 @@
+// Package nutanix contains the functions for creating Nutanix resources.
 package nutanix
 
 import (
-	"fmt"
-
 	pulumi "github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 
-	nutanixconfig "homelab/pkg/cloud/nutanix/config"
+	nutanixschema "homelab/pkg/cloud/nutanix/schema"
+
+	utils "homelab/pkg/utils"
 )
 
-func CreateResources(ctx *pulumi.Context, config *nutanixconfig.Config) error {
+// CreateResources creates the Nutanix resources.
+func CreateResources(ctx *pulumi.Context, config *nutanixschema.Config) error {
 
-	var message string
+	utils.LogInfo(ctx, "✨ Creating Nutanix resources...")
 
-	ctx.Log.Info("TASK: Creating Nutanix resources...", nil)
+	utils.LogInfo(ctx, "Nutanix configuration: %+v", config)
 
-	message = fmt.Sprintf("Nutanix configuration: %+v", config)
-	ctx.Log.Info(message, nil)
+	utils.LogInfo(ctx, "🚀 Successfully created Nutanix resources!")
 
 	return nil
 }

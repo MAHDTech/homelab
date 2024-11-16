@@ -3,7 +3,8 @@
   config,
   lib,
   ...
-}: let
+}:
+let
   packages = with pkgs; [
     hello
   ];
@@ -17,8 +18,10 @@
     nix
     pulumi-bin
     pulumictl
+    yq-go
   ];
-in {
+in
+{
   name = "homelab";
 
   env = {
@@ -42,9 +45,7 @@ in {
     disableHint = false;
   };
 
-  packages =
-    packages
-    ++ lib.optionals (!config.container.isBuilding) devPackages;
+  packages = packages ++ lib.optionals (!config.container.isBuilding) devPackages;
 
   enterShell = ''
     figlet -f starwars -w 120 $PROJECT
@@ -79,7 +80,6 @@ in {
     ];
     hooks = {
       actionlint.enable = true;
-      beautysh.enable = true;
       check-json.enable = true;
       check-merge-conflicts.enable = true;
       check-shebang-scripts-are-executable.enable = true;
@@ -111,7 +111,10 @@ in {
       pre-commit-hook-ensure-sops.enable = true;
       prettier.enable = true;
       pretty-format-json.enable = true;
-      revive.enable = true;
+      revive = {
+        enable = true;
+        fail_fast = false;
+      };
       ripsecrets.enable = true;
       shellcheck.enable = true;
       shfmt.enable = true;

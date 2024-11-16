@@ -1,4 +1,5 @@
-package nutanixconfig
+// Package awsschema contains the structs for the AWS configuration.
+package awsschema
 
 // ConfigRaw is used for the initial YAML parsing and validation.
 type ConfigRaw struct {

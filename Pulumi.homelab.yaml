@@ -3,7 +3,7 @@ config:
   # Global
   #########################
   global:
-    enabled: true
+    enabled: false
     debug: true
 
   #########################
@@ -11,12 +11,6 @@ config:
   #########################
   aws:
     enabled: false
-    infrastructure:
-      ec2:
-        instances:
-          - name: EC2-1
-            description: EC2 Instance 1
-            size: t3.small
 
   #########################
   # Azure
@@ -41,19 +35,205 @@ config:
   #########################
   vsphere:
     enabled: true
-    vcenter:
-      cluster: "Googong"
-      datacenter: Salt Labs
-      datastore: vSAN
-    infrastructure:
+
+    ##########
+    # Common
+    ##########
+
+    common:
+      folders:
+        - name: Test_datacenter
+          type: datacenter
+          path: /
+        - name: Test_host
+          type: host
+          path: /
+        - name: Test_vm
+          type: vm
+          path: /
+        - name: Test_datastore
+          type: datastore
+          path: /
+        - name: Test_network
+          type: network
+          path: /
+
+      contentLibraries:
+        - name: Test_content_library
+          description: Test Content Library
+          publish:
+            enabled: true
+            authentication: none # none or basic
+            username: ""
+            password: ""
+          subscription:
+            enabled: false
+        - name: Test_content_library_2
+          description: Test Content Library 2
+          publish:
+            enabled: false
+          subscription:
+            enabled: true
+            authentication: none # none or basic
+            username: ""
+            password: ""
+            url: ""
+            method: automatic # automatic or manual.
+
+      tags:
+        categories:
+          - name: Tag_Test_Category_1
+            description: Tag Test Category 1
+            cardinality: single
+          - name: Tag_Test_Category_2
+            description: Tag Test Category 2
+            cardinality: multiple
+        tags:
+          - name: Tag_Test_1
+            category: Tag_Test_Category_1
+            description: Tag Test 1
+
+    ##########
+    # Hosts and Clusters
+    ##########
+
+    hosts_and_clusters:
+      enabled: false
+
+      # Datacenters
+      datacenters:
+        - name: Test_folder
+          folder: Test
+        - name: Test_root
+
+      # Clusters
+      clusters:
+        - name: Googong
+          datacenter: Salt Labs
+        - name: Cluster-2
+          datacenter: Test
+
+      # Resource Pools
+      resourcePools:
+        - name: Home Lab
+          cpu:
+            shares:
+              level: normal
+              count: 0
+            reservation: 0
+            limit: -1
+          memory:
+            shares:
+              level: normal
+              count: 0
+            reservation: 0
+            limit: -1
+
+    ##########
+    # Storage
+    ##########
+
+    storage:
+      enabled: false
+
+      datastores:
+        - name: Test_datastore
+          type: nfs # nfs or vmfs
+          datacenter: Test
+          folder: Test
+          nfs:
+            servers:
+              - 10.0.0.1
+              - 10.0.0.2
+            path: /
+            mode: readWrite # readOnly or readWrite
+            type: NFS # NFS or NFS41
+        - name: Test_datastore_2
+          type: vmfs
+          datacenter: Test
+          folder: Test
+          vmfs: # TODO: Add vmfs configuration
+
+      datastoreClusters:
+        - name: Datastore_Cluster_1
+          datacenter: Test
+          folder: Test
+
+      storagePolicies:
+
+    ##########
+    # Network
+    ##########
+
+    network:
+      enabled: false
+
+      # TODO: https://www.pulumi.com/registry/packages/vsphere/api-docs/distributedvirtualswitch/
+      dvswitches:
+        - name: Test_dvswitch
+
+      # TODO: https://www.pulumi.com/registry/packages/vsphere/api-docs/distributedportgroup/
+      dvportgroups:
+        - name: Test_dvportgroup
+          dvswitch: Test_dvswitch
+          vlan: 100
+
+      ##########
+      # NSX ALB
+      ##########
+
+      loadbalancer:
+
+    ##########
+    # Virtual Machines
+    ##########
+
+    virtual_machines:
+      enabled: false
+
+      # TODO: Add OVA support from Content Library.
       vms:
         - name: NIXOS-1
           description: NixOS 1
           size: small
           resourcePool: Home Lab
-          Folder: Fleet
+          folder: Fleet
+          template: ""
         - name: NIXOS-2
           description: NixOS 2
           size: medium
           resourcePool: Home Lab
-          Folder: Fleet
+          folder: Fleet
+
+    ##########
+    # Supervisor
+    ##########
+
+    supervisor:
+      enabled: false
+
+      name: Supervisor
+      cluster: Salt Labs
+      contentLibrary: Test_content_library
+      network:
+        type: vswitch # vswitch or nsx
+        vswitch: vSwitch0
+        edgecluster: ""
+        dns:
+          servers:
+            - 10.0.0.1
+            - 10.0.0.2
+          suffix: saltlabs.cloud
+      management:
+        network:
+        starting_address:
+        subnet_mask:
+        gateway:
+        address_count:
+      storage:
+        policy: vSAN Default Storage Policy
+      control_plane:
+        size: small
+      namespaces:
+        - name: Supervisor-Namespace-1
+          description: Supervisor Namespace 1
