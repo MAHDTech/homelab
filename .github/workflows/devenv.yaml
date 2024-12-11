@@ -16,16 +16,24 @@ on:  # yamllint disable-line rule:truthy
       - devenv.yaml
       - devenv.lock
       - devenv/**
+      - go.mod
+      - go.sum
+      - pkg/**
+      - scripts/**
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
-  contents: write
-  packages: write
+  contents: read
+  packages: read
   pull-requests: write
   statuses: write
+
+defaults:
+  run:
+    shell: bash
 
 env:
   # GitHub
@@ -36,9 +44,8 @@ env:
   # Nix
   NIXPKGS_ALLOW_UNFREE: 1
 
-defaults:
-  run:
-    shell: bash
+  # Go
+  GO111MODULE: on
 
 jobs:
   ##################################################
@@ -121,8 +128,15 @@ jobs:
         with:
           sarif_file: "trivy-results.sarif"
 
-      - id: nancy_sleuth
-        name: Nancy (sleuth)
+      - id: nancy_sleuth_deps
+        name: Nancy (sleuth dependencies)
+        shell: devenv shell --quiet bash -- -e {0}
+        run: >
+          go list -json -deps ./... |
+          nancy sleuth --loud
+
+      - id: nancy_sleuth_mod
+        name: Nancy (sleuth modules)
         shell: devenv shell --quiet bash -- -e {0}
         run: >
           go list -json -mod=readonly -m all |

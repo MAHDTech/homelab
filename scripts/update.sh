@@ -24,6 +24,12 @@ function error() {
 
 function main() {
 
+	message "Tidying Go modules..."
+	go mod tidy || {
+		error "Failed to tidy Go modules!"
+		return 1
+	}
+
 	message "Updating Go dependencies..."
 	go get -v -u ./... || {
 		error "Failed to update Go dependencies!"
