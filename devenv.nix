@@ -5,6 +5,14 @@
   ...
 }:
 let
+  nancy = import ./devenv/derivations/nancy.nix {
+    inherit pkgs;
+  };
+
+  customPackages = [
+    nancy
+  ];
+
   packages = with pkgs; [
     hello
   ];
@@ -19,7 +27,9 @@ let
     pulumi-bin
     pulumictl
     yq-go
+    trivy
   ];
+
 in
 {
   name = "homelab";
@@ -45,7 +55,7 @@ in
     disableHint = false;
   };
 
-  packages = packages ++ lib.optionals (!config.container.isBuilding) devPackages;
+  packages = packages ++ lib.optionals (!config.container.isBuilding) devPackages ++ customPackages;
 
   enterShell = ''
     figlet -f starwars -w 120 $PROJECT
