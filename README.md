@@ -18,9 +18,9 @@ My home lab reimagined semi-annually.
 
 ### 2025
 
-Q4 2024 has brought with it changes in the day job, and now working with a mix of different cloud providers so the Lab has followed suit.
+Q4 2024 has brought with it _yet another change_ in the day job, and now working with a mix of different cloud providers so the Lab has followed suit to be as flexible as possible.
 
-This repo will now move to a single purpose of managing infra using Pulumi to manage Azure and vSphere resources.
+This repo will now move to a single purpose of managing infrastructure with Pulumi to orchestrate the cloud resources only.
 
 All configuration management for the Lab is done using Nix Flakes mangaged in [nix-config](https://github.com/MAHDTech/nix-config).
 
