@@ -54,7 +54,8 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     # Only run this job if the devenv workflow was successful.
-    if: github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success'
+    # TODO: Remove this when fixed.
+    #if: github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success'
 
     timeout-minutes: 30
     continue-on-error: false
