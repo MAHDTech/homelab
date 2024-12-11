@@ -6,20 +6,9 @@
 name: Pulumi
 
 on:
-  push:
-    branches:
-      - trunk
-
-  pull_request:
-    branches:
-      - trunk
-    types:
-      - opened
-      - reopened
-      - edited
-      - assigned
-      - synchronize
-      - review_requested
+  workflow_run:
+    workflows:
+      - devenv
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -61,6 +50,9 @@ jobs:
     name: Matrix
 
     runs-on: ${{ matrix.os }}
+
+    # Only run this job if the devenv workflow was successful.
+    if: github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success'
 
     timeout-minutes: 30
     continue-on-error: false
@@ -160,7 +152,6 @@ jobs:
         if: github.event_name == 'pull_request' || github.event_name == 'push'
         env:
           PULUMI_ROOT: ${{ env.PULUMI_ROOT }}
-          PULUMI_STACK: ${{ matrix.stack }}
           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
         shell: devenv shell --quiet bash -- -e {0}
         run: >
@@ -170,13 +161,13 @@ jobs:
           --show-replacement-steps
           --logtostderr
           --verbose=3
+          --stack ${{ matrix.stack }}
 
       - id: pulumi_update
         name: Pulumi update
         if: github.event_name == 'push' && steps.pulumi_preview.outcome == 'success'
         env:
           PULUMI_ROOT: ${{ env.PULUMI_ROOT }}
-          PULUMI_STACK: ${{ matrix.stack }}
           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
         shell: devenv shell --quiet bash -- -e {0}
         run: >
@@ -188,3 +179,4 @@ jobs:
           --logtostderr
           --verbose=3
           --yes
+          --stack ${{ matrix.stack }}

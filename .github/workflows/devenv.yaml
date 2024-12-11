@@ -109,6 +109,9 @@ jobs:
         name: Go mod download
         shell: devenv shell --quiet bash -- -e {0}
         run: |
+          # TODO: REMOVE THIS TEST
+          rm -rf vendor  
+          go env
           go mod download
 
       - id: devenv_test
