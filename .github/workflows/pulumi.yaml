@@ -37,6 +37,7 @@ env:
 
   # Go
   GO111MODULE: on
+  GOFLAGS: -mod=vendor
 
   # Pulumi Secrets
   PULUMI_COMMENT_ON_PR: true
