@@ -105,6 +105,12 @@ jobs:
         run: |
           devenv gc
 
+      - id: go_mod_download
+        name: Go mod download
+        shell: devenv shell --quiet bash -- -e {0}
+        run: |
+          go mod download
+
       - id: devenv_test
         name: Devenv test
         run: |
