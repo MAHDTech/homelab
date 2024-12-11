@@ -49,6 +49,7 @@ function dotenv() {
 }
 
 function dependencies() {
+	header "✨ TASK: Checking dependencies..."
 
 	# Go dependencies
 	go_dependencies || {
@@ -62,21 +63,20 @@ function dependencies() {
 		return 1
 	}
 
+	return 0
+
 }
 
 function go_dependencies() {
 	header "✨ TASK: Checking dependencies..."
 
-	# Make sure pulumi is installed.
-	message "Checking for Pulumi installation..."
-	pulumi version >/dev/null 2>&1 || {
-		error "Pulumi is not installed!"
-		return 1
-	}
-
 	# Extract the Go package name.
 	message "Extracting Go package name..."
 	GO_PACKAGE_NAME=$(go list -m)
+	if [[ ${GO_PACKAGE_NAME:-EMPTY} == "EMPTY" ]]; then
+		error "Failed to extract Go package name!"
+		return 1
+	fi
 
 	# Go get all package dependencies.
 	message "Go getting package dependencies..."
@@ -104,6 +104,13 @@ function go_dependencies() {
 
 function external_dependencies() {
 	header "✨ TASK: Checking external dependencies..."
+
+	# Make sure pulumi is installed.
+	message "Checking for Pulumi installation..."
+	pulumi version >/dev/null 2>&1 || {
+		error "Pulumi is not installed!"
+		return 1
+	}
 
 	for DEP in "${EXTERNAL_DEPS[@]}"; do
 		message "Checking for $DEP installation..."
