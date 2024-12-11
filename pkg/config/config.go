@@ -141,7 +141,7 @@ func VerifyConfig(ctx *pulumi.Context, configPulumi pulumiConfig.Config) (schema
 		VSphere: configVSphere,
 	}
 
-	utils.LogInfo(ctx, "✅ All configuration verified")
+	utils.LogInfo(ctx, "✅ All configuration has been verified successfully")
 
 	return configFinal, nil
 }

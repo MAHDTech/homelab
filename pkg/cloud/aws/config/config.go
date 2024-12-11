@@ -1,4 +1,5 @@
-// Package awsconfig contains the functions for verifying the AWS configuration.
+// Package awsconfig contains the functions for
+// verifying the AWS configuration.
 package awsconfig
 
 import (
@@ -7,16 +8,18 @@ import (
 
 	pulumi "github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 
-	awsschema "homelab/pkg/cloud/aws/schema"
 	utils "homelab/pkg/utils"
+
+	awsschema "homelab/pkg/cloud/aws/schema"
 )
 
 // VerifyConfig verifies the AWS configuration.
-func VerifyConfig(ctx *pulumi.Context, configRaw awsschema.ConfigRaw) (awsschema.Config, error) {
+func VerifyConfig(
+	ctx *pulumi.Context,
+	configRaw awsschema.ConfigRaw,
+) (awsschema.Config, error) {
 
-	// #########################
-	// Enabled
-	// #########################
+	var configFinal awsschema.Config
 
 	// Validate that 'Enabled' is a boolean.
 	_, ok := configRaw.Enabled.(bool)
@@ -33,23 +36,17 @@ func VerifyConfig(ctx *pulumi.Context, configRaw awsschema.ConfigRaw) (awsschema
 		return awsschema.Config{Enabled: false}, nil
 	}
 
-	/*
-		##########################
-		TODO: Finish AWS config verification here.
-		##########################
-	*/
-
-	// #########################
-	// Configuration
-	// #########################
-
-	// Build the final configuration to be returned.
-
-	configFinal := awsschema.Config{
-		Enabled: configRaw.Enabled.(bool),
+	// Take the raw configuration and unmarshal it into the schema for final validation.
+	if err := utils.TryObject("", configRaw, &configFinal); err != nil {
+		return configFinal, errors.New("failed to parse configuration: " + err.Error())
 	}
 
-	utils.LogInfo(ctx, "✅ AWS configuration verified")
+	// Validate the configuration using the validator tags.
+	if err := configFinal.ValidateAWS(); err != nil {
+		return awsschema.Config{}, err
+	}
+
+	utils.LogInfo(ctx, "✅ AWS configuration verified successfully")
 
 	return configFinal, nil
 }

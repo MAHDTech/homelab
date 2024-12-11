@@ -2,8 +2,10 @@
 package utils
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	pulumi "github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
@@ -50,55 +52,63 @@ func LogError(ctx *pulumi.Context, format string, args ...interface{}) {
 
 }
 
-// TryObject loads an optional configuration value by its key into the output variable,
-// or returns an error if unable to do so.
+// TryObject loads and validates configuration data into a typed schema.
+// It provides detailed error messages for missing fields and type mismatches.
+// The key is optional, and if provided, the value to validate will be retrieved.
 func TryObject(
-	input interface{},
 	key string,
-	output interface{},
-) error {
-	// If input is a map, try to get the value by key
-	if m, ok := input.(map[string]interface{}); ok {
-		if value, exists := m[key]; exists {
-			return tryObject(value, output)
-		}
-		return fmt.Errorf("key '%s' not found in configuration", key)
-	}
-
-	// If input is not a map, try to unmarshal the entire input
-	return tryObject(input, output)
-}
-
-// tryObject is a helper function that attempts to load an optional configuration value
-// into the output variable, or returns an error if unable to do so.
-func tryObject(
 	input interface{},
 	output interface{},
 ) error {
-	// Convert input to JSON bytes based on its type
-	var jsonBytes []byte
-	switch v := input.(type) {
-	case string:
-		jsonBytes = []byte(v)
-	case []byte:
-		jsonBytes = v
-	case map[string]interface{}:
-		var err error
-		jsonBytes, err = json.Marshal(v)
-		if err != nil {
-			return fmt.Errorf("failed to marshal map: %w", err)
-		}
-	default:
-		// If it's any other type, marshal it to JSON first
-		var err error
-		jsonBytes, err = json.Marshal(v)
-		if err != nil {
-			return fmt.Errorf("failed to marshal input: %w", err)
+	// Get the value to validate based on key
+	valueToValidate := input
+	if key != "" {
+		if m, ok := input.(map[string]interface{}); ok {
+			var exists bool
+			valueToValidate, exists = m[key]
+			if !exists {
+				return fmt.Errorf("configuration key '%s' not found", key)
+			}
 		}
 	}
 
-	if err := json.Unmarshal(jsonBytes, output); err != nil {
-		return fmt.Errorf("failed to unmarshal into output: %w", err)
+	// First pass: Convert to JSON to validate basic structure
+	jsonBytes, err := json.Marshal(valueToValidate)
+	if err != nil {
+		return fmt.Errorf("failed to marshal input: %w", err)
+	}
+
+	// Use a decoder for strict validation
+	decoder := json.NewDecoder(bytes.NewReader(jsonBytes))
+	decoder.DisallowUnknownFields()
+
+	// Second pass: Decode with strict type checking
+	if err := decoder.Decode(output); err != nil {
+		// Handle different types of JSON decode errors
+		switch e := err.(type) {
+
+		case *json.UnmarshalTypeError:
+			return fmt.Errorf("type mismatch at field '%s': expected %s but got %s",
+				e.Field, e.Type, e.Value)
+
+		case *json.SyntaxError:
+			return fmt.Errorf("invalid JSON syntax at position %d: %s",
+				e.Offset, e.Error())
+
+		default:
+			// Check if it's an unknown field error
+			if strings.Contains(err.Error(), "unknown field") {
+				return fmt.Errorf("configuration contains unknown field: %s", err.Error())
+			}
+			return fmt.Errorf("validation error: %w", err)
+		}
+	}
+
+	// Third pass: Validate using struct tags if the output implements Validator
+	if validator, ok := output.(interface{ Validate() error }); ok {
+		if err := validator.Validate(); err != nil {
+			return fmt.Errorf("schema validation failed: %w", err)
+		}
 	}
 
 	return nil

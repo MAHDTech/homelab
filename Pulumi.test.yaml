@@ -3,7 +3,7 @@ config:
   # Global
   #########################
   global:
-    enabled: true
+    enabled: false
     debug: true
 
   #########################
@@ -34,4 +34,18 @@ config:
   # vSphere
   #########################
   vsphere:
-    enabled: false
+    enabled: true
+
+    common:
+      enabled: false
+    hosts_and_clusters:
+      enabled: false
+    #  enabled: false
+    #storage:
+    #  enabled: false
+    #network:
+    #  enabled: false
+    #virtual_machines:
+    #  enabled: false
+    #supervisor:
+    #  enabled: false

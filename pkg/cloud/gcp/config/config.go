@@ -1,4 +1,5 @@
-// Package gcpconfig contains the functions for verifying the GCP configuration.
+// Package gcpconfig contains the functions for
+// verifying the GCP configuration.
 package gcpconfig
 
 import (
@@ -7,17 +8,18 @@ import (
 
 	pulumi "github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 
-	gcpschema "homelab/pkg/cloud/gcp/schema"
-
 	utils "homelab/pkg/utils"
+
+	gcpschema "homelab/pkg/cloud/gcp/schema"
 )
 
 // VerifyConfig verifies the GCP configuration.
-func VerifyConfig(ctx *pulumi.Context, configRaw gcpschema.ConfigRaw) (gcpschema.Config, error) {
+func VerifyConfig(
+	ctx *pulumi.Context,
+	configRaw gcpschema.ConfigRaw,
+) (gcpschema.Config, error) {
 
-	// #########################
-	// Enabled
-	// #########################
+	var configFinal gcpschema.Config
 
 	// Validate that 'Enabled' is a boolean.
 	_, ok := configRaw.Enabled.(bool)
@@ -34,22 +36,17 @@ func VerifyConfig(ctx *pulumi.Context, configRaw gcpschema.ConfigRaw) (gcpschema
 		return gcpschema.Config{Enabled: false}, nil
 	}
 
-	/*
-		##########################
-		TODO: Finish GCP config verification here.
-		##########################
-	*/
-
-	// #########################
-	// Configuration
-	// #########################
-
-	// Build the final configuration to be returned.
-
-	configFinal := gcpschema.Config{
-		Enabled: configRaw.Enabled.(bool),
+	// Take the raw configuration and unmarshal it into the schema for final validation.
+	if err := utils.TryObject("", configRaw, &configFinal); err != nil {
+		return configFinal, errors.New("failed to parse configuration: " + err.Error())
 	}
 
-	utils.LogInfo(ctx, "✅ GCP configuration verified")
+	// Validate the configuration using the validator tags.
+	if err := configFinal.ValidateGCP(); err != nil {
+		return gcpschema.Config{}, err
+	}
+
+	utils.LogInfo(ctx, "✅ GCP configuration verified successfully")
+
 	return configFinal, nil
 }

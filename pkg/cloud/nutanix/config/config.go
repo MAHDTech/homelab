@@ -1,4 +1,5 @@
-// Package nutanixconfig contains the functions for verifying the Nutanix configuration.
+// Package nutanixconfig contains the functions for
+// verifying the Nutanix configuration.
 package nutanixconfig
 
 import (
@@ -7,9 +8,9 @@ import (
 
 	pulumi "github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 
-	nutanixschema "homelab/pkg/cloud/nutanix/schema"
-
 	utils "homelab/pkg/utils"
+
+	nutanixschema "homelab/pkg/cloud/nutanix/schema"
 )
 
 // VerifyConfig verifies the Nutanix configuration.
@@ -18,9 +19,7 @@ func VerifyConfig(
 	configRaw nutanixschema.ConfigRaw,
 ) (nutanixschema.Config, error) {
 
-	// #########################
-	// Enabled
-	// #########################
+	var configFinal nutanixschema.Config
 
 	// Validate that 'Enabled' is a boolean.
 	_, ok := configRaw.Enabled.(bool)
@@ -37,23 +36,17 @@ func VerifyConfig(
 		return nutanixschema.Config{Enabled: false}, nil
 	}
 
-	/*
-		##########################
-		TODO: Finish Nutanix config verification here.
-		##########################
-	*/
-
-	// #########################
-	// Configuration
-	// #########################
-
-	// Build the final configuration to be returned.
-
-	configFinal := nutanixschema.Config{
-		Enabled: configRaw.Enabled.(bool),
+	// Take the raw configuration and unmarshal it into the schema for final validation.
+	if err := utils.TryObject("", configRaw, &configFinal); err != nil {
+		return configFinal, errors.New("failed to parse configuration: " + err.Error())
 	}
 
-	utils.LogInfo(ctx, "✅ Nutanix configuration verified")
+	// Validate the configuration using the validator tags.
+	if err := configFinal.ValidateNutanix(); err != nil {
+		return nutanixschema.Config{}, err
+	}
+
+	utils.LogInfo(ctx, "✅ Nutanix configuration verified successfully")
 
 	return configFinal, nil
 }

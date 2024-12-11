@@ -4,7 +4,7 @@ config:
   #########################
   global:
     enabled: false
-    debug: true
+    debug: false
 
   #########################
   # AWS
@@ -41,6 +41,7 @@ config:
     ##########
 
     common:
+      enabled: true
       folders:
         - name: Test_datacenter
           type: datacenter
@@ -61,19 +62,15 @@ config:
       contentLibraries:
         - name: Test_content_library
           description: Test Content Library
+          type: published
           publish:
-            enabled: true
             authentication: none # none or basic
             username: ""
             password: ""
-          subscription:
-            enabled: false
         - name: Test_content_library_2
           description: Test Content Library 2
-          publish:
-            enabled: false
+          type: subscribed
           subscription:
-            enabled: true
             authentication: none # none or basic
             username: ""
             password: ""
@@ -115,18 +112,27 @@ config:
 
       # Resource Pools
       resourcePools:
+        - name: CPU_custom
+          cpu:
+            shares:
+              level: custom
+              count: 0
         - name: Home Lab
           cpu:
             shares:
               level: normal
               count: 0
-            reservation: 0
-            limit: -1
+            reservation:
+              mhz: 0
+              expandable: true
+            limit: -2
           memory:
             shares:
               level: normal
               count: 0
-            reservation: 0
+            reservation:
+              mb: 0
+              expandable: false
             limit: -1
 
     ##########
@@ -154,10 +160,13 @@ config:
           folder: Test
           vmfs: # TODO: Add vmfs configuration
 
-      datastoreClusters:
-        - name: Datastore_Cluster_1
-          datacenter: Test
-          folder: Test
+      #datastoreClusters:
+      #  - name: Datastore_Cluster_1
+      #    datacenter: Test
+      #    folder: Test
+
+      # test none
+      # test datastoreClusters:
 
       storagePolicies:
 
@@ -170,13 +179,18 @@ config:
 
       # TODO: https://www.pulumi.com/registry/packages/vsphere/api-docs/distributedvirtualswitch/
       dvswitches:
-        - name: Test_dvswitch
+        - name: Test_dvswitch_1
+        - name: Test_dvswitch_2
+        - name: Test_dvswitch_3
 
       # TODO: https://www.pulumi.com/registry/packages/vsphere/api-docs/distributedportgroup/
       dvportgroups:
-        - name: Test_dvportgroup
-          dvswitch: Test_dvswitch
+        - name: Test_dvportgroup_1
+          dvswitch: Test_dvswitch_1
           vlan: 100
+        - name: Test_dvportgroup_2
+          dvswitch: Test_dvswitch_2
+          vlan: 200
 
       ##########
       # NSX ALB
@@ -224,15 +238,15 @@ config:
             - 10.0.0.1
             - 10.0.0.2
           suffix: saltlabs.cloud
-      management:
-        network:
-        starting_address:
-        subnet_mask:
-        gateway:
-        address_count:
       storage:
         policy: vSAN Default Storage Policy
-      control_plane:
+      management:
+        network:
+        startingAddress:
+        subnetMask:
+        gateway:
+        addressCount:
+      controlPlane:
         size: small
       namespaces:
         - name: Supervisor-Namespace-1

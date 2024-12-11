@@ -1,4 +1,5 @@
-// Package azureconfig contains the functions for verifying the Azure configuration.
+// Package azureconfig contains the functions for
+// verifying the Azure configuration.
 package azureconfig
 
 import (
@@ -7,9 +8,9 @@ import (
 
 	pulumi "github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 
-	azureschema "homelab/pkg/cloud/azure/schema"
-
 	utils "homelab/pkg/utils"
+
+	azureschema "homelab/pkg/cloud/azure/schema"
 )
 
 // VerifyConfig verifies the Azure configuration.
@@ -18,9 +19,7 @@ func VerifyConfig(
 	configRaw azureschema.ConfigRaw,
 ) (azureschema.Config, error) {
 
-	// #########################
-	// Enabled
-	// #########################
+	var configFinal azureschema.Config
 
 	// Validate that 'Enabled' is a boolean.
 	_, ok := configRaw.Enabled.(bool)
@@ -37,22 +36,17 @@ func VerifyConfig(
 		return azureschema.Config{Enabled: false}, nil
 	}
 
-	/*
-		##########################
-		TODO: Finish Azure config verification here.
-		##########################
-	*/
-
-	// #########################
-	// Configuration
-	// #########################
-
-	// Build the final configuration to be returned.
-
-	configFinal := azureschema.Config{
-		Enabled: configRaw.Enabled.(bool),
+	// Take the raw configuration and unmarshal it into the schema for final validation.
+	if err := utils.TryObject("", configRaw, &configFinal); err != nil {
+		return configFinal, errors.New("failed to parse configuration: " + err.Error())
 	}
 
-	utils.LogInfo(ctx, "✅ Azure configuration verified")
+	// Validate the configuration using the validator tags.
+	if err := configFinal.ValidateAzure(); err != nil {
+		return azureschema.Config{}, err
+	}
+
+	utils.LogInfo(ctx, "✅ Azure configuration verified successfully")
+
 	return configFinal, nil
 }

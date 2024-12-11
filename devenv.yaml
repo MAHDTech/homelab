@@ -11,7 +11,7 @@ permittedInsecurePackages: []
 imports: []
 
 clean:
-  enabled: true
+  enabled: false
   keep:
     - CACHIX_AUTH_TOKEN
     - EDITOR

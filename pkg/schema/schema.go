@@ -28,9 +28,18 @@ type ConfigRaw struct {
 type Config struct {
 	Global globalschema.Config `yaml:"global"`
 
-	AWS     awsschema.Config     `yaml:"aws"`
-	Azure   azureschema.Config   `yaml:"azure"`
-	GCP     gcpschema.Config     `yaml:"gcp"`
-	VSphere vsphereschema.Config `yaml:"vsphere"`
-	Nutanix nutanixschema.Config `yaml:"nutanix"`
+	// AWS represents the entire AWS configuration.
+	AWS awsschema.Config `yaml:"aws" json:"aws"`
+
+	// Azure represents the entire Azure configuration.
+	Azure azureschema.Config `yaml:"azure" json:"azure"`
+
+	// GCP represents the entire GCP configuration.
+	GCP gcpschema.Config `yaml:"gcp" json:"gcp"`
+
+	// vSphere represents the entire vSphere configuration.
+	VSphere vsphereschema.Config `yaml:"vsphere" json:"vsphere"`
+
+	// Nutanix represents the entire Nutanix configuration.
+	Nutanix nutanixschema.Config `yaml:"nutanix" json:"nutanix"`
 }
