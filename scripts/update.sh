@@ -24,6 +24,12 @@ function error() {
 
 function main() {
 
+	message "Cleaning Go modules..."
+	go clean -modcache || {
+		error "Failed to clean Go modules!"
+		return 1
+	}
+
 	message "Tidying Go modules..."
 	go mod tidy || {
 		error "Failed to tidy Go modules!"
