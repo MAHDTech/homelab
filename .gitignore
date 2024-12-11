@@ -24,8 +24,10 @@ go.work.sum
 # Go list file
 go.list
 
-# env file
+# env files
 .env
+.env.*
+
 # Devenv
 .devenv*
 devenv.local.nix
