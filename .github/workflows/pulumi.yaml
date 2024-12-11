@@ -8,7 +8,7 @@ name: Pulumi
 on:
   push:
     branches:
-    - trunk
+      - trunk
 
   pull_request:
     branches:
@@ -44,7 +44,6 @@ env:
   PULUMI_ROOT: ./
 
 jobs:
-
   ##################################################
   # Generate a matrix of possible Pulumi stacks.
   ##################################################
@@ -71,7 +70,7 @@ jobs:
           fetch-depth: 1
 
       - id: generate_matrix
-        name: Generating a matrix of Pulumi stacks
+        name: Generating a matrix of Pulumi stack configurations
         # TODO: pulumi stack ls --json | jq .[].name
         run: |
           echo "Generating matrix of Pulumi stacks..."
@@ -104,7 +103,6 @@ jobs:
         stack: ${{ fromJson(needs.matrix.outputs.stack_matrix) }}
 
     steps:
-
       - id: go_setup
         name: Set up Go
         uses: actions/setup-go@v5

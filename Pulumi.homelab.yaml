@@ -34,7 +34,7 @@ config:
   # vSphere
   #########################
   vsphere:
-    enabled: true
+    enabled: false
 
     ##########
     # Common
