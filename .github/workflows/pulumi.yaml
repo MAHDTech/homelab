@@ -8,7 +8,7 @@ name: Pulumi
 on:
   workflow_run:
     workflows:
-      - devenv
+      - Devenv
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
