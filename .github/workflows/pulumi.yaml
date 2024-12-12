@@ -6,15 +6,13 @@
 name: Pulumi
 
 on:
-  # TODO: Remove this when fixed.
-  #workflow_run:
-  #  workflows:
-  #    - devenv
-  pull_request:
+  workflow_run:
+    workflows:
+      - devenv
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 permissions:
   contents: read
@@ -55,8 +53,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     # Only run this job if the devenv workflow was successful.
-    # TODO: Remove this when fixed.
-    #if: github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success'
+    if: github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success'
 
     timeout-minutes: 30
     continue-on-error: false
@@ -76,7 +73,7 @@ jobs:
 
       - id: generate_matrix
         name: Generating a matrix of Pulumi stack configurations
-        # TODO: pulumi stack ls --json | jq .[].name
+        # TODO: pulumi stack ls --json | jq -r .[].name
         run: |
           echo "Generating matrix of Pulumi stacks..."
           # yamllint disable-line rule:line-length
@@ -146,7 +143,6 @@ jobs:
         name: Go mod download
         shell: devenv shell --quiet bash -- -e {0}
         run: |
-          go env
           go mod download
 
       - id: pulumi_login

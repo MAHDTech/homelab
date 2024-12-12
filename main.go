@@ -15,15 +15,14 @@ import (
 func main() {
 	pulumi.Run(func(ctx *pulumi.Context) error {
 
-		// Load the dotenv file.
+		// Load the optional .env file or show a warning if it fails.
 		err := godotenv.Load()
 		if err != nil {
-			utils.LogError(
+			utils.LogWarn(
 				ctx,
-				"Failed to load the file '.env'. Please check that the file exists and is readable: %s",
+				"Failed to load dotenv file '.env'. Please check that the file exists and is readable: %s",
 				err.Error(),
 			)
-			return err
 		}
 
 		// Read the pulumi stack variables into a config object.

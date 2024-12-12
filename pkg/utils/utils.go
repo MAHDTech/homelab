@@ -31,6 +31,27 @@ func LogInfo(ctx *pulumi.Context, format string, args ...interface{}) {
 
 }
 
+// LogWarn is a helper function that logs a warning message and
+// handles any potential logging errors by totally ignoring them :)
+func LogWarn(ctx *pulumi.Context, format string, args ...interface{}) {
+
+	// The user might either pass a format string with variables,
+	// or just a string directly.
+
+	var message string
+
+	if len(args) > 0 {
+		message = fmt.Sprintf(format, args...)
+	} else {
+		message = format
+	}
+
+	if err := ctx.Log.Warn(message, nil); err != nil {
+		fmt.Printf("logging error: %v\n", err)
+	}
+
+}
+
 // LogError is a helper function that logs an error message and
 // handles any potential logging errors by totally ignoring them :)
 func LogError(ctx *pulumi.Context, format string, args ...interface{}) {
