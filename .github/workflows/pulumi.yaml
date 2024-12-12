@@ -9,6 +9,8 @@ on:
   workflow_run:
     workflows:
       - Devenv
+    types:
+      - completed
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -53,7 +55,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     # Only run this job if the devenv workflow was successful.
-    if: github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success'
+    if: github.event.workflow_run.conclusion == 'success'
 
     timeout-minutes: 30
     continue-on-error: false
@@ -155,7 +157,7 @@ jobs:
 
       - id: pulumi_preview
         name: Pulumi preview
-        if: github.event_name == 'pull_request' || github.event_name == 'push'
+        if: github.event.workflow_run.event == 'pull_request' || github.event.workflow_run.event == 'push'
         env:
           PULUMI_ROOT: ${{ env.PULUMI_ROOT }}
           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
@@ -171,7 +173,7 @@ jobs:
 
       - id: pulumi_update
         name: Pulumi update
-        if: github.event_name == 'push' && steps.pulumi_preview.outcome == 'success'
+        if: github.event.workflow_run.event == 'push' && steps.pulumi_preview.outcome == 'success'
         env:
           PULUMI_ROOT: ${{ env.PULUMI_ROOT }}
           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}

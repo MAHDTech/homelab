@@ -12,7 +12,25 @@ on:  # yamllint disable-line rule:truthy
   schedule:
     - cron: "00 0 * * 0"
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  packages: read
+  pull-requests: write
+  statuses: write
+
+defaults:
+  run:
+    shell: bash
+
 jobs:
+  ##################################################
+  # CodeQL Analyze
+  ##################################################
+
   analyze:
     name: Analyze (${{ matrix.language }})
 
