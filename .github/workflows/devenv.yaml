@@ -46,7 +46,7 @@ env:
 
   # Go
   GO111MODULE: on
-  GOFLAGS: -mod=vendor
+  GOFLAGS: -mod=readonly
 
 jobs:
   ##################################################
@@ -110,8 +110,6 @@ jobs:
         name: Go mod download
         shell: devenv shell --quiet bash -- -e {0}
         run: |
-          # TODO: REMOVE THIS TEST WHEN FIXED
-          #rm -rf vendor  
           go env
           go mod download
 

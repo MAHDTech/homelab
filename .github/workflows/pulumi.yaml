@@ -37,7 +37,7 @@ env:
 
   # Go
   GO111MODULE: on
-  GOFLAGS: -mod=vendor
+  GOFLAGS: -mod=readonly
 
   # Pulumi Secrets
   PULUMI_COMMENT_ON_PR: true
@@ -141,6 +141,13 @@ jobs:
         name: Devenv install
         run: |
           nix profile install --accept-flake-config nixpkgs#devenv
+
+      - id: go_mod_download
+        name: Go mod download
+        shell: devenv shell --quiet bash -- -e {0}
+        run: |
+          go env
+          go mod download
 
       - id: pulumi_login
         name: Pulumi login
