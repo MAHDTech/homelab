@@ -3,24 +3,15 @@ name: Devenv
 
 # prettier-ignore
 on:  # yamllint disable-line rule:truthy
+  # Only run on pushes to the mainline branch.
   push:
     branches:
       - trunk
 
+  # Only run on pull requests that target the mainline branch.
   pull_request:
     branches:
       - "trunk"
-    paths:
-      - .github/workflows/devenv.yaml
-      - devenv.nix
-      - devenv.yaml
-      - devenv.lock
-      - devenv/**
-      - go.mod
-      - go.sum
-      - pkg/**
-      - scripts/**
-      - "*.go"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
