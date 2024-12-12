@@ -19,6 +19,7 @@ let
 
   devPackages = with pkgs; [
     figlet
+    gh
     go
     go-tools
     golangci-lint
