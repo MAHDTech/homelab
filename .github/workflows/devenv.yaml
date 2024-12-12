@@ -20,6 +20,7 @@ on:  # yamllint disable-line rule:truthy
       - go.sum
       - pkg/**
       - scripts/**
+      - "*.go"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
