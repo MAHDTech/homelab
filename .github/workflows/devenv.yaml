@@ -16,24 +16,37 @@ on:  # yamllint disable-line rule:truthy
       - devenv.yaml
       - devenv.lock
       - devenv/**
+      - go.mod
+      - go.sum
+      - pkg/**
+      - scripts/**
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
-  contents: write
-  packages: write
+  contents: read
+  packages: read
   pull-requests: write
-  statuses: read
-
-env:
-  NIXPKGS_ALLOW_UNFREE: 1
-
-  PROJECT: ${{ github.repository }}
-
-  BRANCH_NAME_CURRENT: ${{ github.head_ref || github.ref_name }}
-  BRANCH_NAME_DEFAULT: ${{ github.event.repository.default_branch }}
+  statuses: write
 
 defaults:
   run:
     shell: bash
+
+env:
+  # GitHub
+  PROJECT: ${{ github.repository }}
+  BRANCH_NAME_CURRENT: ${{ github.head_ref || github.ref_name }}
+  BRANCH_NAME_DEFAULT: ${{ github.event.repository.default_branch }}
+
+  # Nix
+  NIXPKGS_ALLOW_UNFREE: 1
+
+  # Go
+  GO111MODULE: on
+  GOFLAGS: -mod=readonly
 
 jobs:
   ##################################################
@@ -45,7 +58,7 @@ jobs:
 
     runs-on: ${{ matrix.os }}
 
-    timeout-minutes: 30
+    timeout-minutes: 60
     continue-on-error: false
 
     strategy:
@@ -64,7 +77,7 @@ jobs:
 
       - id: install_nix
         name: "Install Nix ❄️"
-        uses: cachix/install-nix-action@v27
+        uses: cachix/install-nix-action@v30
         with:
           github_access_token: ${{ secrets.GITHUB_TOKEN }}
           enable_kvm: true
@@ -72,6 +85,7 @@ jobs:
       - id: cachix
         name: "Enable Cachix ❄️"
         uses: cachix/cachix-action@v15
+        if: vars.CACHIX_CACHE_NAME != ''
         with:
           name: ${{ vars.CACHIX_CACHE_NAME }}
           authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
@@ -85,19 +99,109 @@ jobs:
       - id: devenv_install
         name: Devenv install
         run: |
-          nix profile install nixpkgs#devenv
-
-      - id: devenv_info
-        name: Devenv info
-        run: |
-          devenv info
+          nix profile install --accept-flake-config nixpkgs#devenv
 
       - id: devenv_gc
         name: Devenv gc
         run: |
           devenv gc
 
+      - id: go_mod_download
+        name: Go mod download
+        shell: devenv shell --quiet bash -- -e {0}
+        run: |
+          go mod download
+
       - id: devenv_test
         name: Devenv test
+        env:
+          CACHIX_CACHE_NAME: ${{ env.CACHIX_CACHE_NAME }}
+          CACHIX_AUTH_TOKEN: ${{ secrets.CACHIX_AUTH_TOKEN }}
         run: |
           devenv test
+
+      - id: trivy_filesystem
+        name: Trivy filesystem scan (SARIF)
+        shell: devenv shell --quiet bash -- -e {0}
+        run: >
+          trivy
+          filesystem
+          --scanners vuln,misconfig,secret,license
+          --format sarif
+          --output trivy-results.sarif
+          --exit-code 0
+          .
+
+      - id: trivy_upload
+        name: Trivy (upload)
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: "trivy-results.sarif"
+
+      - id: nancy_sleuth_deps
+        name: Nancy (sleuth dependencies)
+        shell: devenv shell --quiet bash -- -e {0}
+        run: >
+          go list -json -deps ./... |
+          nancy sleuth --loud
+
+      - id: nancy_sleuth_mod
+        name: Nancy (sleuth modules)
+        shell: devenv shell --quiet bash -- -e {0}
+        run: >
+          go list -json -mod=readonly -m all |
+          nancy sleuth --loud
+          --exclude-vulnerability
+          CVE-2024-2660
+
+      ##################################################
+      # Status reports
+      ##################################################
+
+      - id: devenv_status
+        name: Devenv (status)
+        if: always()
+        shell: devenv shell --quiet bash -- -e {0}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [[ ${{ steps.devenv_test.outcome }} == 'success' ]];
+          then
+            RESULT="success"
+            DESCRIPTION="Devenv test passed"
+          else
+            RESULT="failure"
+            DESCRIPTION="Devenv test failed"
+          fi
+          gh api \
+            repos/${{ github.repository }}/statuses/${{ github.sha }} \
+            -f state=${RESULT} \
+            -f context="${{ github.workflow }}" \
+            -f description="${DESCRIPTION}" \
+            -f target_url="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" || {
+              echo "Failed to report devenv status"; exit 1;
+            }
+
+      - id: trivy_status
+        name: Trivy (status)
+        if: always()
+        shell: devenv shell --quiet bash -- -e {0}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [[ ${{ steps.trivy_filesystem.outcome }} == 'success' ]];
+          then
+            RESULT="success"
+            DESCRIPTION="Trivy security scan passed"
+          else
+            RESULT="failure"
+            DESCRIPTION="Trivy security scan failed"
+          fi
+          gh api \
+            repos/${{ github.repository }}/statuses/${{ github.sha }} \
+            -f state=${RESULT} \
+            -f context="${{ github.workflow }}" \
+            -f description="${DESCRIPTION}" \
+            -f target_url="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" || {
+              echo "Failed to report trivy status"; exit 1;
+            }

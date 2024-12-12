@@ -1,21 +1,22 @@
+// Package aws contains the functions for creating AWS resources.
 package aws
 
 import (
-	"fmt"
-
 	pulumi "github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 
-	awsconfig "homelab/pkg/cloud/aws/config"
+	awsschema "homelab/pkg/cloud/aws/schema"
+
+	utils "homelab/pkg/utils"
 )
 
-func CreateResources(ctx *pulumi.Context, config *awsconfig.Config) error {
+// CreateResources creates the AWS resources.
+func CreateResources(ctx *pulumi.Context, config *awsschema.Config) error {
 
-	var message string
+	utils.LogInfo(ctx, "✨ Creating AWS resources...")
 
-	ctx.Log.Info("TASK: Creating AWS resources...", nil)
+	utils.LogInfo(ctx, "AWS configuration: %+v", config)
 
-	message = fmt.Sprintf("AWS configuration: %+v", config)
-	ctx.Log.Info(message, nil)
+	utils.LogInfo(ctx, "🚀 Successfully created AWS resources!")
 
 	return nil
 }

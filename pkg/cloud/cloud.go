@@ -1,39 +1,41 @@
+// Package cloud is the main entry point for creating the resources
+// for each of the supported cloud providers.
 package cloud
 
 import (
 	pulumi "github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 
-	aws "homelab/pkg/cloud/aws"
-	azure "homelab/pkg/cloud/azure"
-	gcp "homelab/pkg/cloud/gcp"
-	global "homelab/pkg/cloud/global"
-	nutanix "homelab/pkg/cloud/nutanix"
-	vsphere "homelab/pkg/cloud/vsphere"
-	config "homelab/pkg/config"
+	"homelab/pkg/cloud/aws"
+	"homelab/pkg/cloud/azure"
+	"homelab/pkg/cloud/gcp"
+	"homelab/pkg/cloud/nutanix"
+	"homelab/pkg/cloud/vsphere"
+	schema "homelab/pkg/schema"
+	utils "homelab/pkg/utils"
 )
 
-func CreateResources(ctx *pulumi.Context, configVerified *config.Config) error {
+// CreateResources is responsible for creating the resources for each
+// of the supported cloud providers.
+func CreateResources(ctx *pulumi.Context, configVerified *schema.Config) error {
 
 	var err error
 
-	ctx.Log.Info("TASK: Creating cloud resources...", nil)
-
-	// Create the global resources if enabled.
-	if configVerified.Global.Enabled {
-		err = global.CreateResources(ctx, &configVerified.Global)
-		if err != nil {
-			message := "Failed to create global resources!"
-			ctx.Log.Error(message, nil)
-			return err
-		}
+	// If the global configuration is disabled, we can skip the rest of the function.
+	if !configVerified.Global.Enabled {
+		utils.LogInfo(
+			ctx,
+			"🛈 The 'global' configuration section is disabled. Skipping creation of all cloud resources.",
+		)
+		return nil
 	}
+
+	utils.LogInfo(ctx, "✨ Creating cloud resources...")
 
 	// Create the AWS resources if enabled.
 	if configVerified.AWS.Enabled {
 		err = aws.CreateResources(ctx, &configVerified.AWS)
 		if err != nil {
-			message := "Failed to create AWS resources!"
-			ctx.Log.Error(message, nil)
+			utils.LogError(ctx, "💥 Failed to create AWS resources!")
 			return err
 		}
 	}
@@ -42,8 +44,7 @@ func CreateResources(ctx *pulumi.Context, configVerified *config.Config) error {
 	if configVerified.Azure.Enabled {
 		err = azure.CreateResources(ctx, &configVerified.Azure)
 		if err != nil {
-			message := "Failed to create Azure resources!"
-			ctx.Log.Error(message, nil)
+			utils.LogError(ctx, "💥 Failed to create Azure resources!")
 			return err
 		}
 	}
@@ -52,8 +53,7 @@ func CreateResources(ctx *pulumi.Context, configVerified *config.Config) error {
 	if configVerified.GCP.Enabled {
 		err = gcp.CreateResources(ctx, &configVerified.GCP)
 		if err != nil {
-			message := "Failed to create GCP resources!"
-			ctx.Log.Error(message, nil)
+			utils.LogError(ctx, "💥 Failed to create GCP resources!")
 			return err
 		}
 	}
@@ -62,18 +62,16 @@ func CreateResources(ctx *pulumi.Context, configVerified *config.Config) error {
 	if configVerified.Nutanix.Enabled {
 		err = nutanix.CreateResources(ctx, &configVerified.Nutanix)
 		if err != nil {
-			message := "Failed to create Nutanix resources!"
-			ctx.Log.Error(message, nil)
+			utils.LogError(ctx, "💥 Failed to create Nutanix resources!")
 			return err
 		}
 	}
 
-	// Create the VSphere resources if enabled.
+	// Create the vSphere resources if enabled.
 	if configVerified.VSphere.Enabled {
 		err = vsphere.CreateResources(ctx, &configVerified.VSphere)
 		if err != nil {
-			message := "Failed to create VSphere resources!"
-			ctx.Log.Error(message, nil)
+			utils.LogError(ctx, "💥 Failed to create VSphere resources!")
 			return err
 		}
 	}

@@ -1,0 +1,51 @@
+config:
+  #########################
+  # Global
+  #########################
+  global:
+    enabled: false
+    debug: true
+
+  #########################
+  # AWS
+  #########################
+  aws:
+    enabled: false
+
+  #########################
+  # Azure
+  #########################
+  azure:
+    enabled: false
+
+  #########################
+  # GCP
+  #########################
+  gcp:
+    enabled: false
+
+  #########################
+  # Nutanix
+  #########################
+  nutanix:
+    enabled: false
+
+  #########################
+  # vSphere
+  #########################
+  vsphere:
+    enabled: false
+
+    common:
+      enabled: false
+    hosts_and_clusters:
+      enabled: false
+    #  enabled: false
+    #storage:
+    #  enabled: false
+    #network:
+    #  enabled: false
+    #virtual_machines:
+    #  enabled: false
+    #supervisor:
+    #  enabled: false

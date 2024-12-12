@@ -5,6 +5,16 @@ clear
 set -euo pipefail
 
 ##################################################
+# CONSTANTS
+##################################################
+
+readonly DOTENV_FILE_COMMON=".env"
+
+readonly EXTERNAL_DEPS=(
+	jq
+)
+
+##################################################
 # FUNCTIONS
 ##################################################
 
@@ -15,21 +25,23 @@ function header() {
 }
 
 function message() {
-	echo "$*"
+	echo "✅ $*"
 }
 
 function error() {
-	echo "ERROR: $*"
+	echo "💥 ERROR: $*"
 }
 
 function dotenv() {
 
-	if [[ -f ".env" ]]; then
-		message "Sourcing .env file..."
-		# shellcheck disable=SC1091
-		source .env
+	local ENV_FILE="$1"
+
+	if [[ -f $ENV_FILE ]]; then
+		message "Sourcing dotenv file $ENV_FILE..."
+		# shellcheck disable=SC1090
+		source "$ENV_FILE"
 	else
-		message "No .env file found, skipping..."
+		message "No dotenv file found named $ENV_FILE, skipping..."
 	fi
 
 	return 0
@@ -37,17 +49,34 @@ function dotenv() {
 }
 
 function dependencies() {
+	header "✨ TASK: Checking dependencies..."
 
-	# Make sure pulumi is installed.
-	message "Checking for Pulumi installation..."
-	pulumi version >/dev/null 2>&1 || {
-		error "Pulumi is not installed!"
+	# Go dependencies
+	go_dependencies || {
+		error "Failed to check Go dependencies!"
 		return 1
 	}
+
+	# External dependencies
+	external_dependencies || {
+		error "Failed to check external dependencies!"
+		return 1
+	}
+
+	return 0
+
+}
+
+function go_dependencies() {
+	header "✨ TASK: Checking dependencies..."
 
 	# Extract the Go package name.
 	message "Extracting Go package name..."
 	GO_PACKAGE_NAME=$(go list -m)
+	if [[ ${GO_PACKAGE_NAME:-EMPTY} == "EMPTY" ]]; then
+		error "Failed to extract Go package name!"
+		return 1
+	fi
 
 	# Go get all package dependencies.
 	message "Go getting package dependencies..."
@@ -56,17 +85,10 @@ function dependencies() {
 		return 1
 	}
 
-	# Tidy the Go modules.
-	message "Tidying Go modules..."
+	# Download and Tidy the Go modules.
+	message "Downloading and Tidying Go modules..."
 	go mod tidy || {
 		error "Failed to tidy Go modules!"
-		return 1
-	}
-
-	# Download the Go modules.
-	message "Downloading Go modules..."
-	go mod download || {
-		error "Failed to download Go modules!"
 		return 1
 	}
 
@@ -80,13 +102,53 @@ function dependencies() {
 	return 0
 }
 
+function external_dependencies() {
+	header "✨ TASK: Checking external dependencies..."
+
+	# Make sure pulumi is installed.
+	message "Checking for Pulumi installation..."
+	pulumi version >/dev/null 2>&1 || {
+		error "Pulumi is not installed!"
+		return 1
+	}
+
+	for DEP in "${EXTERNAL_DEPS[@]}"; do
+		message "Checking for $DEP installation..."
+		$DEP --version >/dev/null 2>&1 || {
+			error "$DEP is not installed!"
+			return 1
+		}
+	done
+
+	return 0
+}
+
+function select_stack() {
+	header "✨ TASK: Selecting stack..."
+
+	message "Pulumi stack selection..."
+	pulumi stack select || {
+		error "Failed to select stack!"
+		return 1
+	}
+
+	PULUMI_STACK=$(pulumi stack ls --json | jq -r '.[] | select(.current == true) | .name')
+
+	message "Selected stack: $PULUMI_STACK"
+	dotenv ".env.${PULUMI_STACK}" || {
+		error "Failed to source dotenv file for stack ${PULUMI_STACK} from file .env.${PULUMI_STACK}!"
+		return 1
+	}
+
+	return 0
+}
+
 function dry_run() {
-	header "OK: Starting preview..."
+	header "✨ TASK: Starting preview..."
 
 	message "Pulumi previewing..."
 	pulumi preview \
 		--refresh \
-		--diff \
 		--show-replacement-steps \
 		--logtostderr \
 		--verbose=3 || {
@@ -96,7 +158,7 @@ function dry_run() {
 }
 
 function run() {
-	header "OK: Starting update..."
+	header "✨ TASK: Starting update..."
 
 	message "Pulumi updating..."
 	pulumi update \
@@ -113,8 +175,8 @@ function run() {
 
 function main() {
 
-	# Source the dotenv if it exists.
-	dotenv || {
+	# Source the common dotenv if it exists.
+	dotenv "${DOTENV_FILE_COMMON}" || {
 		error "Failed to source dotenv!"
 		return 1
 	}
@@ -122,6 +184,12 @@ function main() {
 	# Make sure the dependencies are installed.
 	dependencies || {
 		error "Failed to check dependencies!"
+		return 1
+	}
+
+	# Ask the user to select the stack.
+	select_stack || {
+		error "Failed to select stack!"
 		return 1
 	}
 
@@ -144,12 +212,12 @@ function main() {
 # MAIN
 ##################################################
 
-header "OK: Running script..."
+header "✨ TASK: Running script..."
 
 main || {
-	header "ERROR: Script failed! Review the output for more information."
+	header "💥 ERROR: Script failed! Review the output for more information."
 	exit 1
 }
 
-header "OK: Script completed successfully!"
+header "✨ TASK: Script completed successfully!"
 exit 0

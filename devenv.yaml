@@ -10,9 +10,10 @@ permittedInsecurePackages: []
 imports: []
 
 clean:
-  enabled: true
+  enabled: false
   keep:
     - CACHIX_AUTH_TOKEN
     - EDITOR
     - GITHUB_TOKEN
+    - HOME
     - PULUMI_ACCESS_TOKEN

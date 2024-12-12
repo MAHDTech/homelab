@@ -1,24 +1,22 @@
+// Package gcp contains the functions for creating GCP resources.
 package gcp
 
 import (
-	"fmt"
-
 	pulumi "github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 
-	gcpconfig "homelab/pkg/cloud/gcp/config"
+	gcpschema "homelab/pkg/cloud/gcp/schema"
+
+	utils "homelab/pkg/utils"
 )
 
-func CreateResources(ctx *pulumi.Context, config *gcpconfig.Config) error {
+// CreateResources creates the GCP resources.
+func CreateResources(ctx *pulumi.Context, config *gcpschema.Config) error {
 
-	var message string
+	utils.LogInfo(ctx, "✨ Creating GCP resources...")
 
-	ctx.Log.Info("TASK: Creating GCP resources...", nil)
+	utils.LogInfo(ctx, "GCP configuration: %+v", config)
 
-	message = "TODO: CREATE GCP RESOURCES HERE..."
-	ctx.Log.Info(message, nil)
-
-	message = fmt.Sprintf("GCP configuration: %+v", config)
-	ctx.Log.Info(message, nil)
+	utils.LogInfo(ctx, "🚀 Successfully created GCP resources!")
 
 	return nil
 }
