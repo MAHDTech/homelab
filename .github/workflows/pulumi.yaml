@@ -150,7 +150,6 @@ jobs:
         shell: devenv shell --quiet bash -- -e {0}
         env:
           PULUMI_ROOT: ${{ env.PULUMI_ROOT }}
-          PULUMI_STACK: ${{ matrix.stack }}
           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
         run: pulumi login
 
